@@ -7,10 +7,12 @@ app.use(express.json());
 // Import routes
 const usersRouter = require('./routes/users');
 const eventsRouter = require('./routes/events');
+const locationsRouter = require('./routes/locations');
 
 // Use routes
 app.use('/users', usersRouter);
 app.use('/events', eventsRouter);
+app.use('/locations', locationsRouter);
 
 const PORT = process.env.PORT || 3000;
 
