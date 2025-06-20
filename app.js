@@ -4,15 +4,13 @@ const db = require('./models');
 
 app.use(express.json());
 
-app.get('/users', async (req, res) => {
-    try {
-        const users = await db.User.findAll();
-        res.json(users);
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+// Import routes
+const usersRouter = require('./routes/users');
+const eventsRouter = require('./routes/events');
+
+// Use routes
+app.use('/users', usersRouter);
+app.use('/events', eventsRouter);
 
 const PORT = process.env.PORT || 3000;
 
