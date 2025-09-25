@@ -1,7 +1,10 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../models');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret'; // put in .env later
 // Get all users
 router.get('/', async (req, res) => {
     try {
@@ -23,11 +26,30 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Create new user
+// Create new user (register)
 router.post('/', async (req, res) => {
     try {
-        const newUser = await db.User.create(req.body);
-        res.status(201).json(newUser);
+        const { name, email, password, role } = req.body;
+
+        // Hash the password
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(password, saltRounds);
+
+        // Save with hashed password
+        const newUser = await db.User.create({
+            name,
+            email,
+            password_hash,
+            role,
+        });
+
+        // Don’t return the password hash to the client
+        res.status(201).json({
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+        });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
